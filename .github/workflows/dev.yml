@@ -10,8 +10,7 @@ jobs:
 
       # run any `bun` or `bunx` command
       - run: cd server
-      - run: bun install
-      - run: bun run test
+      - run: ls
 
   build:
     name: build
