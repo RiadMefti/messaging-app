@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import UserManager from "../services/UserManager";
-import { Status } from "../types/Type";
+import UserManager from "../src/services/UserManager";
+import { Status } from "../src/types/Type";
 
 describe("UserManager", () => {
     let userManager: UserManager;
