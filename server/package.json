@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "bun build",
+    "test": "bun test",
     "dev": "bun run --watch index.ts"
   },
   "peerDependencies": {
