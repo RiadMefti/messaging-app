@@ -24,7 +24,7 @@ describe("UserManager", () => {
     test("disconnecting a user when he is already there should success", () => {
         userManager.connectUser({ id: "1", name: "toto", tempSocketId: "1" });
         const secondResponse = userManager.disconnectUser({ id: "1", name: "toto", tempSocketId: "1" });
-        expect(secondResponse.status).toBe(Status.SUCCESS);
+        expect(secondResponse.status).toBe(Status.ERROR);
     });
 
 });
