@@ -6,7 +6,8 @@
     "bun-types": "latest"
   },
   "scripts": {
-    "build": "bun build",
+    "build": "bun build index.ts",
+    "test": "bun test index.ts",
     "dev": "bun run --watch index.ts"
   },
   "peerDependencies": {
