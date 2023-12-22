@@ -1,4 +1,4 @@
-export type UserId = string | number;
+export type UserId = string;
 export type ResponseStatus = {
     status: Status;
     message: string;
