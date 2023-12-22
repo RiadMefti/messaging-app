@@ -3,8 +3,8 @@ import express from 'express';
 import { Server } from 'socket.io';
 import cors from 'cors';
 
-import userRouter from './src/controllers/user-controller/UserController';
-import SocketHandlerConfigurator from './src/socketHandlers/SocketHandler';
+import userRouter from './controllers/user-controller/UserController';
+import SocketHandlerConfigurator from './socketHandlers/SocketHandler';
 
 class App {
     private app: express.Express;

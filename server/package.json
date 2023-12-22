@@ -9,14 +9,13 @@
     "drizzle-kit": "^0.20.7"
   },
   "scripts": {
-    "build": "bun build index.ts",
-    "test": "bun test index.ts",
-    "dev": "bun run --watch index.ts",
-    "db:migrate:create":"drizzle-kit generate:sqlite --config drizzle.config.ts", 
+    "build": "bun build ./src/index.ts --outdir ./build --target bun",
+    "test": "bun test",
+    "dev": "bun run --watch src/index.ts",
+    "db:migrate:create": "drizzle-kit generate:sqlite --config drizzle.config.ts",
     "db:migrate": "bun ./database/migrate.ts",
     "db:delete": "rm sqlite.db",
     "studio": "drizzle-kit studio"
-
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
