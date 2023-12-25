@@ -36,4 +36,17 @@ export default class UserRepository {
             return null;
         }
     }
+    async deleteUserById(id: string): Promise<ResponseStatus> {
+        try {
+            const test = await this.db.delete(schema.users).where(eq(schema.users.id, id));
+            console.log(test)
+            return { status: Status.SUCCESS, message: "User deleted" }
+        }
+        catch (err: unknown) {
+            if (err instanceof Error) {
+                return { status: Status.ERROR, message: err.message }
+            }
+            return { status: Status.ERROR, message: 'An unknown error occurred' }
+        }
+    }
 }
