@@ -14,7 +14,7 @@ export default class UserRepository {
             await this.db.insert(schema.users).values({
                 id: user.id as string,
                 name: user.name,
-                tempSocketId: user.tempSocketId,
+
             });
             return { status: Status.SUCCESS, message: "User created" }
         }
