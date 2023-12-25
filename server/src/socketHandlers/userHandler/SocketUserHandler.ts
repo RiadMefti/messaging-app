@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import UserManager from "../../services/UserManager";
+import UserConnectionService from "../../services/UserConnectionService";
 
 export default class SocketUserHandler {
     private io: Server;
@@ -19,12 +20,14 @@ export default class SocketUserHandler {
                 socket.emit('register', user);
             });
             socket.on('login', async (id: string) => {
-                const user = await this.userManager.loginUser(id);
+                const user = await this.userManager.loginUser(socket.id, id);
                 socket.emit('login', user);
             });
 
             socket.on('disconnect', () => {
-                console.log('user disconnected');
+                console.log('user disconnected' + socket.id)
+                UserConnectionService.disconnectUser(socket.id);
+
             });
         });
     }
