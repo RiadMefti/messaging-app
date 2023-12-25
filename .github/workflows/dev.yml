@@ -13,7 +13,6 @@ jobs:
           cd server && 
           bun install && 
           bun db:migrate:create &&
-          bun db:migrate &&
           bun test
 
   build:
