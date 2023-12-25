@@ -8,3 +8,8 @@ export enum Status {
     ERROR = "ERROR",
     SUCCESS = "SUCCESS"
 }
+
+export type NameReturn = {
+    id: string;
+    name: string;
+}

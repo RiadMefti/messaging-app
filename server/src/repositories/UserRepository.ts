@@ -1,7 +1,6 @@
 import { db as Db, eq, schema } from '../../database/SqLite';
-import User from '../models/User';
+import User from '../classes/User';
 import { ResponseStatus, Status } from '../types/Type';
-import { hash } from '../utils/crypto';
 export default class UserRepository {
     private db: typeof Db;
 
@@ -26,27 +25,15 @@ export default class UserRepository {
         }
     }
 
-    async findUserById(id: string): Promise<User | null> {
+    async findUsers(): Promise<User[] | null> {
         try {
-            const user = await this.db.select().from(schema.users).where(eq(schema.users.id, id));
-            return user[0] as User;
+            const users = await this.db.select().from(schema.users);
+            return users as User[];
         }
         catch (err: unknown) {
-            console.log(err)
+            
             return null;
         }
     }
-    async deleteUserById(id: string): Promise<ResponseStatus> {
-        try {
-            const test = await this.db.delete(schema.users).where(eq(schema.users.id, id));
-            console.log(test)
-            return { status: Status.SUCCESS, message: "User deleted" }
-        }
-        catch (err: unknown) {
-            if (err instanceof Error) {
-                return { status: Status.ERROR, message: err.message }
-            }
-            return { status: Status.ERROR, message: 'An unknown error occurred' }
-        }
-    }
+  
 }
