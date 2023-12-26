@@ -1,5 +1,5 @@
 import { db as Db, eq, schema } from '../../database/SqLite';
-import User from '../classes/User';
+import User from '../models/User';
 import { ResponseStatus, Status } from '../types/Type';
 export default class UserRepository {
     private db: typeof Db;
@@ -31,9 +31,9 @@ export default class UserRepository {
             return users as User[];
         }
         catch (err: unknown) {
-            
+
             return null;
         }
     }
-  
+
 }

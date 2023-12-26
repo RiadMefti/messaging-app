@@ -1,4 +1,4 @@
-import User from "../classes/User";
+import User from "../models/User";
 import UserRepository from "../repositories/UserRepository";
 import { UserId } from "../types/Type";
 import { NameReturn } from "../types/Type";
@@ -6,7 +6,7 @@ import { NameReturn } from "../types/Type";
 import RandomManager from "./SecretManager";
 import UserConnectionService from "./UserConnectionService";
 export default class UserManager {
-  
+
     userRepository: UserRepository;
 
     constructor(userRepository: UserRepository) {
@@ -37,9 +37,9 @@ export default class UserManager {
 
         if (users) {
             const user = await RandomManager.findUserByHashId(id, users as User[]);
-            if(user){
-                user.id = id as unknown as UserId;        
-                UserConnectionService.connectUser(socketId, user); 
+            if (user) {
+                user.id = id as unknown as UserId;
+                UserConnectionService.connectUser(socketId, user);
             }
             return user
         }
@@ -47,5 +47,5 @@ export default class UserManager {
 
     }
 
-   
+
 }

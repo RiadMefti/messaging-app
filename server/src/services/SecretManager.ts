@@ -1,4 +1,4 @@
-import User from "../classes/User";
+import User from "../models/User";
 
 
 export default class HashManager {

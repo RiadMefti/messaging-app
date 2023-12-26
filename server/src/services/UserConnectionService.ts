@@ -1,5 +1,5 @@
-import User from "../classes/User";
-import { ResponseStatus, Status, UserId } from "../types/Type";
+import User from "../models/User";
+import { ResponseStatus, Status} from "../types/Type";
 
 type socketId = string;
 export default class UserConnectionService {
