@@ -1,5 +1,5 @@
 import User from "../models/User";
-import { ResponseStatus, Status} from "../types/Type";
+import { ResponseStatus, Status } from "../types/Type";
 
 type socketId = string;
 export default class UserConnectionService {
@@ -13,6 +13,23 @@ export default class UserConnectionService {
 
             return { status: Status.SUCCESS, message: "User added" }
         }
+    }
+    static getUserBysocketID(socketId: string): User | null {
+        if (UserConnectionService.users.has(socketId)) {
+            return UserConnectionService.users.get(socketId) as User
+        }
+        else {
+            return null
+        }
+    }
+    
+    static getSocketIdByName(name: string): string | null {
+        for (const [key, value] of UserConnectionService.users.entries()) {
+            if (value.name === name) {
+                return key
+            }
+        }
+        return null
     }
 
     static disconnectUser(socketId: string) {

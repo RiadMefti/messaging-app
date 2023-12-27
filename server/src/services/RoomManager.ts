@@ -1,5 +1,6 @@
 import Room from "../models/Room"
 import RoomRepository from "../repositories/RoomRepository"
+import UserConnectionService from "./UserConnectionService";
 
 
 
@@ -10,8 +11,13 @@ export default class RoomManager {
         this.roomRepository = roomRepository;
 
     }
+    async getRooms(userName: string): Promise<Room[] | null> {
 
-    async createRoom(userName: string) {
+
+        const rooms = await this.roomRepository.getRooms(userName)
+        return rooms
+    }
+    async createRoom(userName: string): Promise<string> {
         const uniqueRoomId = crypto.randomUUID()
         const room: Room = {
             roomId: uniqueRoomId,
@@ -20,6 +26,8 @@ export default class RoomManager {
         }
 
         await this.roomRepository.create(room)
+
+        return uniqueRoomId
 
     }
 
@@ -42,6 +50,25 @@ export default class RoomManager {
         }
 
         await this.roomRepository.deleteUserFromRoom(room)
+
+    }
+
+    async createRoomWithUser(userName: string, otherPersonUsername: string): Promise<string | undefined> {
+
+        const uniqueRoomId = await this.createRoom(userName) 
+        const roomUser2: Room = {
+            roomId: uniqueRoomId,
+            userName: otherPersonUsername,
+            hidden: false
+        }
+
+   
+        await this.roomRepository.addUserToRoom(roomUser2)
+        const otherUserSocketId = UserConnectionService.getSocketIdByName(otherPersonUsername)
+        if (otherUserSocketId) {
+            return otherUserSocketId
+        }
+        return undefined
 
     }
 

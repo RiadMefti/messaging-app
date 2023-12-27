@@ -25,6 +25,23 @@ export default class RoomRepository {
             return { status: Status.ERROR, message: 'An unknown error occurred' }
         }
     }
+    async getRooms(userName: string): Promise<Room[] | null> {
+        try {
+            const res = await this.db.select().from(schema.rooms).where(
+                eq(schema.rooms.userName, userName)
+
+            )
+
+            if (res.length === 0) return null
+            return res as Room[];
+        }
+        catch (err: unknown) {
+            if (err instanceof Error) {
+                return null
+            }
+            return null
+        }
+    }
 
     async addUserToRoom(room: Room): Promise<ResponseStatus> {
         try {
@@ -70,7 +87,7 @@ export default class RoomRepository {
 
             if (res.length === 0) return null
             return res as Room[];
-            
+
         }
         catch (err: unknown) {
             if (err instanceof Error) {
