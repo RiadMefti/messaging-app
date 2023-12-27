@@ -7,6 +7,7 @@ import UserConnectionService from "./UserConnectionService";
 
 export default class RoomManager {
     private roomRepository: RoomRepository;
+
     constructor(roomRepository: RoomRepository) {
         this.roomRepository = roomRepository;
 

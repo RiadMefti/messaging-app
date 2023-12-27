@@ -13,3 +13,9 @@ export type NameReturn = {
     id: string;
     name: string;
 }
+export type Messsage = {
+    message: string;
+    room : string;
+    sender : string;
+    time : string;
+}

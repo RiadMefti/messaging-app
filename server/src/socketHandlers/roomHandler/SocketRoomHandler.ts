@@ -18,8 +18,14 @@ export default class SocketRoomHandler {
             socket.on('getRooms', async () => {
                 const user = UserConnectionService.getUserBysocketID(socket.id)
                 const rooms = await this.roomManager.getRooms(user?.name as string)
+                socket.emit('joinRooms', rooms)
 
-                socket.emit('getRooms', rooms)
+            })
+
+            socket.on('joinRooms', (rooms) => {
+                rooms.forEach((room: string) => {
+                    socket.join(room)
+                })
 
             })
 
@@ -33,9 +39,11 @@ export default class SocketRoomHandler {
 
                     if (otherPersonSocketId != undefined) {
                         const user2Rooms = await this.roomManager.getRooms(otherPersonUsername)
-                        socket.to(otherPersonSocketId).emit('getRooms', user2Rooms)
+
+                        socket.to(otherPersonSocketId).emit('joinRooms', user2Rooms)
                     }
-                    socket.emit('getRooms', user1Rooms)
+                    socket.emit('joinRooms', user1Rooms)
+
 
 
                 }
