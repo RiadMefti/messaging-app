@@ -24,8 +24,8 @@ class App {
         });
 
         // Initialize socket handlers
-        this.socketConfigurator = new SocketHandlerConfigurator(this.io);
-        this.socketConfigurator.initSocketHandler();
+        // Initialize socket handlers
+        this.socketConfigurator = SocketHandlerConfigurator.getInstance(this.io);
 
         // Initialize middlewares
 

@@ -14,7 +14,6 @@ export default class SocketUserHandler {
     private handleUserConnection() {
         this.io.on('connection', (socket: Socket) => {
             console.log('a user connected from user');
-
             socket.on('register', async (name: string) => {
                 const user = await this.userManager.createUser(name);
                 socket.emit('register', user);
