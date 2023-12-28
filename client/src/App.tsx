@@ -1,7 +1,9 @@
+import MainPage from "./pages/MainPage";
+
 function App() {
   return (
-    <div>
-      <h1>Im a bad man</h1>
+    <div className="h-screen w-screen dark">
+      <MainPage />
     </div>
   );
 }
