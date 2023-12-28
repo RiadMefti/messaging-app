@@ -8,7 +8,14 @@ export default class HashManager {
         return crypto.randomUUID().split("-")[4];
     }
     static getRandomNameID(): string {
-        return crypto.randomUUID().split("-")[0];
+        const random = crypto.randomUUID().split("-")[0];
+        if (random.length > 4) {
+            return random.slice(0, 4);
+        }
+        else {
+            return random;
+        }
+
     }
     static async hash(beforeEncryption: string): Promise<string> {
         return await Bun.password.hash(beforeEncryption);

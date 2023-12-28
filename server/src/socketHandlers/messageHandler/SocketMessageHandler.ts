@@ -13,7 +13,7 @@ export default class SocketMessageHandler {
 
     private handleUserConnection() {
         this.io.on('connection', (socket: Socket) => {
-            console.log('a user connected from user');
+     
 
 
             socket.on('sendMessage', (data) => {

@@ -13,7 +13,7 @@ export default class SocketRoomHandler {
 
     private handleUserConnection() {
         this.io.on('connection', (socket: Socket) => {
-            console.log('a user connected from Room');
+      
 
             socket.on('getRooms', async () => {
                 const user = UserConnectionService.getUserBysocketID(socket.id)
