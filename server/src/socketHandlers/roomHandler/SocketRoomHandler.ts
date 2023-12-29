@@ -13,19 +13,22 @@ export default class SocketRoomHandler {
 
     private handleUserConnection() {
         this.io.on('connection', (socket: Socket) => {
-      
+
 
             socket.on('getRooms', async () => {
                 const user = UserConnectionService.getUserBysocketID(socket.id)
                 const rooms = await this.roomManager.getRooms(user?.name as string)
+
                 socket.emit('joinRooms', rooms)
 
             })
 
             socket.on('joinRooms', (rooms) => {
-                rooms.forEach((room: string) => {
-                    socket.join(room)
-                })
+
+
+                socket.join(rooms)
+
+
 
             })
 

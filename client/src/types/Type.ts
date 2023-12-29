@@ -13,7 +13,7 @@ export type NameReturn = {
     id: string;
     name: string;
 }
-export type Messsage = {
+export type Message = {
     message: string;
     room: string;
     sender: string;
@@ -23,5 +23,11 @@ export type Messsage = {
 export type User = {
     id: UserId;
     name: string;
- 
+
+
+}
+export  interface Room {
+    roomId: string;
+    userName: string;
+    hidden: boolean;
 }

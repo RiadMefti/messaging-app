@@ -1,95 +1,77 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import { Button } from "@/components/ui/button";
-interface Chat {
-  id: number;
-  name: string;
-}
-interface ChatMessages {
-  [key: number]: Message[];
-}
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useUserStore } from "@/stores/UserStore";
+import { Room, Message } from "@/types/Type";
+import { useRoomStore } from "@/stores/RoomStore";
+import socket from "@/socket";
 
-interface Message {
-  id: number;
-  text: string;
-  sender: string;
-}
+type MessageData = {
+  room: string;
+  message: Message;
+};
 const ChatPage: FC = () => {
-  const [selectedChat, setSelectedChat] = useState<number | null>(null);
   const [newChatId, setNewChatId] = useState("");
   const [message, setMessage] = useState("");
   const [isChatSelectorVisible, setIsChatSelectorVisible] = useState(true);
+  const { user } = useUserStore();
+  const {
+    rooms,
+    setRooms,
+    selectedRoom,
+    setSelectedRoom,
+    addMessageToRoom,
+    initMessagesRoom,
+    messages,
+  } = useRoomStore();
+  const navigate = useNavigate(); // Initialize useNavigate
+  const currentUserId = user?.name;
 
-  const currentUserId = "User1";
-  const chats: Chat[] = [
-    { id: 1, name: "Chat 1" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    { id: 2, name: "Chat 2" },
-    // ... more chats
-  ];
-  const changeChat = (id: number) => {
-    setIsChatSelectorVisible(false);
-    setSelectedChat(id);
+  const createRoom = (otherPersonUsername: string) => {
+    socket.emit("createRoom", otherPersonUsername);
   };
-  const [chatMessages, setChatMessages] = useState<ChatMessages>({
-    1: [
-      { id: 1, text: "Hello there!", sender: "User1" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-      { id: 2, text: "How are you?", sender: "User2" },
-    ],
-    2: [
-      { id: 1, text: "Hey, what's up?", sender: "User3" },
-      { id: 2, text: "Not much, you?", sender: "User4" },
-      // ... more messages for Chat 2
-    ],
-    // ... more chats with their messages
-  });
-
   const handleSendMessage = () => {
-    if(!message) return;
-    if (selectedChat != null) {
-      const newMessage: Message = {
-        id: Date.now(), // simplistic approach for unique ID
-        text: message,
-        sender: currentUserId,
-      };
-
-      setChatMessages({
-        ...chatMessages,
-        [selectedChat]: [newMessage, ...chatMessages[selectedChat]],
-      });
-
-      setMessage("");
-    }
+    if (!message) return;
+    const messageObject: Message = {
+      sender: currentUserId as string,
+      message: message,
+      room: selectedRoom?.roomId as string,
+      time: new Date().toUTCString(),
+    };
+    sendMessage(selectedRoom?.roomId as string, messageObject);
+  };
+  const initRoomMessages = (rooms: Room[]) => {
+    rooms.forEach((room) => {
+      initMessagesRoom(room);
+    });
   };
 
+  const sendMessage = (roomId: string, message: Message) => {
+    const data = { room: roomId, message: message } as MessageData;
+    socket.emit("sendMessage", data);
+  };
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    } else {
+      socket.emit("getRooms");
+      socket.on("joinRooms", (rooms) => {
+        const roomIds = rooms.map((room: Room) => room.roomId);
+        socket.emit("joinRooms", roomIds);
+        setRooms(rooms);
+        initRoomMessages(rooms);
+      });
+      socket.on("receiveMessage", (data: MessageData) => {
+        console.log(data);
+        addMessageToRoom(data.room, data.message);
+      });
+    }
+    return () => {
+      socket.off("joinRooms");
+      socket.off("receiveMessage");
+    };
+  }, []);
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Chat selector (sidebar) */}
@@ -115,6 +97,7 @@ const ChatPage: FC = () => {
           className="w-full py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary-foreground hover:text-primary"
           onClick={() => {
             /* Create new chat logic */
+            createRoom(newChatId);
           }}
         >
           Create Chat
@@ -123,22 +106,22 @@ const ChatPage: FC = () => {
           style={{ maxHeight: "75vh", overflowY: "scroll", marginTop: "2rem" }}
         >
           {" "}
-          {chats.map((chat) => (
+          {rooms?.map((room: Room) => (
             <div
-              key={chat.id}
+              key={room.roomId}
               className={`p-3 cursor-pointer rounded-md ${
-                selectedChat === chat.id
+                selectedRoom?.roomId === room.roomId
                   ? "bg-accent text-accent-foreground"
                   : "hover:bg-secondary hover:text-secondary-foreground"
               }`}
-              onClick={() => changeChat(chat.id)}
+              onClick={() => setSelectedRoom(room)}
             >
-              {chat.name}
+              {room.roomId}
             </div>
           ))}
         </div>
       </div>
-      {selectedChat ? (
+      {selectedRoom ? (
         <div className="flex-1 flex flex-col md:w-4/6 p-6">
           <div className="flex items-center gap-5">
             {" "}
@@ -147,7 +130,7 @@ const ChatPage: FC = () => {
                 onClick={() => setIsChatSelectorVisible(!isChatSelectorVisible)}
               />
             </div>
-            <h2 className="text-xl">Chat {selectedChat}</h2>
+            <h2 className="text-xl">Chat {selectedRoom.roomId}</h2>
           </div>
 
           <div
@@ -159,8 +142,8 @@ const ChatPage: FC = () => {
             }}
           >
             {/* Display messages for the selected chat */}
-            {selectedChat != null &&
-              chatMessages[selectedChat]?.map((message, index) => (
+            {selectedRoom.roomId != null &&
+              messages.get(selectedRoom.roomId)?.map((message, index) => (
                 <div
                   key={index}
                   className={`px-4 py-2 shadow w-4/5 ${
@@ -172,7 +155,7 @@ const ChatPage: FC = () => {
                   {message.sender !== currentUserId && (
                     <strong>{message.sender}:</strong>
                   )}
-                  {message.text}
+                  {message.message}
                 </div>
               ))}
           </div>
@@ -213,7 +196,12 @@ const ChatPage: FC = () => {
         >
           {" "}
           Please select a chat{" "}
-          <Button onClick={() => setIsChatSelectorVisible(true)}>Select</Button>
+          <Button
+            className="xl:hidden"
+            onClick={() => setIsChatSelectorVisible(true)}
+          >
+            Select
+          </Button>
         </div>
       )}
       {/* Main chat content */}

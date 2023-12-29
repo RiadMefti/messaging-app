@@ -24,7 +24,10 @@ const SignIn: FC = () => {
         setLoginMessage("Invalid ID. Please try again.");
       }
     });
-  }, [setUser, navigate]);
+    return () => {
+      socket.off("login");
+    };
+  }, []);
 
   const handleLogin = () => {
     if (userId) {

@@ -19,11 +19,17 @@ const SignUp: FC = () => {
         `Your ID is ${user.id}. Keep it safe as it cannot be retrieved if lost.`
       );
     });
+
+    // Cleanup function
+    return () => {
+      socket.off("register");
+    };
   }, []);
 
   const submitUsername = () => {
     socket.emit("register", username);
   };
+  
 
   const handleOkClick = () => {
     // Emit login event with user ID

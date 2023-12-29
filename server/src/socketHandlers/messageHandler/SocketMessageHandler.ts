@@ -13,11 +13,12 @@ export default class SocketMessageHandler {
 
     private handleUserConnection() {
         this.io.on('connection', (socket: Socket) => {
-     
+
 
 
             socket.on('sendMessage', (data) => {
-                this.io.to(data.room).emit('receiveMessage', data.message);
+
+                this.io.to(data.room).emit('receiveMessage', data);
             });
             socket.on('disconnect', () => {
                 console.log('user disconnected' + socket.id)
