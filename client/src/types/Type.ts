@@ -31,3 +31,7 @@ export  interface Room {
     userName: string;
     hidden: boolean;
 }
+export type RoomWithOtherPerson={
+    room: Room;
+    otherPersonneInTheRoom: string;
+}

@@ -1,14 +1,14 @@
-import { Room, Message } from "@/types/Type";
+import { Room, Message, RoomWithOtherPerson } from "@/types/Type";
 import { create } from "zustand";
 
 type roomId = string;
 type RoomStoreState = {
-    rooms: Room[] | null;
-    selectedRoom: Room | null;
-    setRooms: (rooms: Room[]) => void;
-    setSelectedRoom: (room: Room) => void;
+    rooms: RoomWithOtherPerson[] | null;
+    selectedRoom: RoomWithOtherPerson | null;
+    setRooms: (rooms: RoomWithOtherPerson[]) => void;
+    setSelectedRoom: (room: RoomWithOtherPerson) => void;
     messages: Map<roomId, Message[]>;
-    initMessagesRoom: (room: Room) => void;
+    initMessagesRoom: (room: RoomWithOtherPerson) => void;
     addMessageToRoom: (roomId: string, message: Message) => void;
 
 };
@@ -18,21 +18,20 @@ export const useRoomStore = create<RoomStoreState>((set) => ({
     rooms: null,
     selectedRoom: null,
     messages: new Map(),
-    setRooms: (rooms: Room[]) => set({ rooms }),
-    setSelectedRoom: (room: Room) => set({ selectedRoom: room }),
+    setRooms: (rooms: RoomWithOtherPerson[]) => set({ rooms }),
+    setSelectedRoom: (room: RoomWithOtherPerson) => set({ selectedRoom: room }),
 
 
-    initMessagesRoom: (room: Room) => {
-        const roomId = room.roomId;
-
+    initMessagesRoom: (room: RoomWithOtherPerson) => {
         set((state) => {
             // Create a new Map with the same entries as the existing messages Map
             const newMessages = new Map(state.messages.entries());
 
-            // Add the new room and its messages to the new Map
-            newMessages.set(roomId, []);
+            // Only initialize the messages for the room if they haven't been initialized yet
+            if (!newMessages.has(room.room.roomId)) {
+                newMessages.set(room.room.roomId, []);
+            }
 
-            // Return the new Map as the new state
             return {
                 messages: newMessages
             };

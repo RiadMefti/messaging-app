@@ -1,9 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { useUserStore } from "@/stores/UserStore";
-import { Room, Message } from "@/types/Type";
+import { Message, RoomWithOtherPerson } from "@/types/Type";
 import { useRoomStore } from "@/stores/RoomStore";
 import socket from "@/socket";
 
@@ -11,6 +11,7 @@ type MessageData = {
   room: string;
   message: Message;
 };
+
 const ChatPage: FC = () => {
   const [newChatId, setNewChatId] = useState("");
   const [message, setMessage] = useState("");
@@ -36,17 +37,25 @@ const ChatPage: FC = () => {
     const messageObject: Message = {
       sender: currentUserId as string,
       message: message,
-      room: selectedRoom?.roomId as string,
+      room: selectedRoom?.room.roomId as string,
       time: new Date().toUTCString(),
     };
-    sendMessage(selectedRoom?.roomId as string, messageObject);
+    sendMessage(selectedRoom?.room.roomId as string, messageObject);
   };
-  const initRoomMessages = (rooms: Room[]) => {
+  const initRoomMessages = (rooms: RoomWithOtherPerson[]) => {
     rooms.forEach((room) => {
       initMessagesRoom(room);
     });
   };
+  const messagesEndRef = useRef<any>(null);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]); // Dependency array includes messages
   const sendMessage = (roomId: string, message: Message) => {
     const data = { room: roomId, message: message } as MessageData;
     socket.emit("sendMessage", data);
@@ -58,7 +67,9 @@ const ChatPage: FC = () => {
     } else {
       socket.emit("getRooms");
       socket.on("joinRooms", (rooms) => {
-        const roomIds = rooms.map((room: Room) => room.roomId);
+        const roomIds = rooms.map(
+          (room: RoomWithOtherPerson) => room.room.roomId
+        );
         socket.emit("joinRooms", roomIds);
         setRooms(rooms);
         initRoomMessages(rooms);
@@ -104,20 +115,25 @@ const ChatPage: FC = () => {
           Create Chat
         </button>
         <div
-          style={{ maxHeight: "75vh",height:'75vh', overflowY: "auto", marginTop: "2rem" }}
+          style={{
+            maxHeight: "75vh",
+            height: "75vh",
+            overflowY: "auto",
+            marginTop: "2rem",
+          }}
         >
           {" "}
-          {rooms?.map((room: Room) => (
+          {rooms?.map((room: RoomWithOtherPerson) => (
             <div
-              key={room.roomId}
+              key={room.room.roomId}
               className={`p-3 cursor-pointer rounded-md ${
-                selectedRoom?.roomId === room.roomId
+                selectedRoom?.room.roomId === room.room.roomId
                   ? "bg-accent text-accent-foreground"
                   : "hover:bg-secondary hover:text-secondary-foreground"
               }`}
               onClick={() => setSelectedRoom(room)}
             >
-              {room.roomId}
+              {room.otherPersonneInTheRoom}
             </div>
           ))}
         </div>
@@ -131,31 +147,40 @@ const ChatPage: FC = () => {
                 onClick={() => setIsChatSelectorVisible(!isChatSelectorVisible)}
               />
             </div>
-            <h2 className="text-xl">Chat {selectedRoom.roomId}</h2>
+            <h2 className="text-xl">
+              Chat {selectedRoom.otherPersonneInTheRoom}
+            </h2>
           </div>
 
           <div
-            className="flex flex-col-reverse space-y-4 p-10 space-y-reverse"
+            className="flex flex-col space-y-4 p-10"
             style={{
-              maxHeight: "80vh",
-              minHeight: "80vh",
-              overflowY: "scroll",
+              height: "80vh",
+              overflowY: "auto",
             }}
           >
             {/* Display messages for the selected chat */}
-            {selectedRoom.roomId != null &&
-              messages.get(selectedRoom.roomId)?.map((message, index) => (
+            {selectedRoom.room.roomId != null &&
+              messages.get(selectedRoom.room.roomId)?.map((message, index) => (
                 <div
                   key={index}
                   className={`px-4 py-2 shadow w-4/5 ${
                     message.sender === currentUserId
                       ? "bg-primary text-primary-foreground ml-auto rounded-s-3xl"
-                      : "bg-muted text-muted-foreground mr-auto rounded-e-3xl"
+                      : "bg-muted text-grey mr-auto rounded-e-3xl"
                   }`}
                 >
                   {message.sender !== currentUserId && (
-                    <strong>{message.sender}:</strong>
+                    <div>
+                      {" "}
+                      <strong>{message.sender}</strong> <br />
+                    </div>
                   )}
+                  {message.sender === currentUserId && (
+                    <div ref={messagesEndRef}>
+                      <strong>{selectedRoom.room.userName}</strong> <br />
+                    </div>
+                  )}{" "}
                   {message.message}
                 </div>
               ))}
