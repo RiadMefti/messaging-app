@@ -50,6 +50,7 @@ const ChatPage: FC = () => {
   const sendMessage = (roomId: string, message: Message) => {
     const data = { room: roomId, message: message } as MessageData;
     socket.emit("sendMessage", data);
+    setMessage("");
   };
   useEffect(() => {
     if (!user) {
@@ -103,7 +104,7 @@ const ChatPage: FC = () => {
           Create Chat
         </button>
         <div
-          style={{ maxHeight: "75vh", overflowY: "scroll", marginTop: "2rem" }}
+          style={{ maxHeight: "75vh",height:'75vh', overflowY: "auto", marginTop: "2rem" }}
         >
           {" "}
           {rooms?.map((room: Room) => (
@@ -197,7 +198,7 @@ const ChatPage: FC = () => {
           {" "}
           Please select a chat{" "}
           <Button
-            className="xl:hidden"
+            className="xl:hidden lg:hidden md:hidden"
             onClick={() => setIsChatSelectorVisible(true)}
           >
             Select

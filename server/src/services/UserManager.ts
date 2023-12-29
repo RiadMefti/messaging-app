@@ -14,7 +14,7 @@ export default class UserManager {
     }
 
     public async createUser(name: string): Promise<NameReturn> {
-        const id = RandomManager.getRandomNameID();
+        const id = RandomManager.getRandomUserId();
         const nameId = RandomManager.getRandomNameID();
         const hashedId = await RandomManager.hash(id);
 

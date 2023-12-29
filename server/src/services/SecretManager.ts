@@ -5,7 +5,7 @@ export default class HashManager {
 
 
     static getRandomUserId(): string {
-        return crypto.randomUUID().split("-")[4];
+        return crypto.randomUUID().split("-")[0];
     }
     static getRandomNameID(): string {
         const random = crypto.randomUUID().split("-")[0];
