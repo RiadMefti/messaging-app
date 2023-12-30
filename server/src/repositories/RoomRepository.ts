@@ -1,6 +1,6 @@
 import { db as Db, eq, schema } from '../../database/SqLite';
 import Room from '../models/Room';
-import { ResponseStatus, Status } from '../types/Type';
+import { ResponseStatus, RoomWithOtherPerson, Status } from '../types/Type';
 export default class RoomRepository {
     private db: typeof Db;
 
@@ -79,13 +79,11 @@ export default class RoomRepository {
             return { status: Status.ERROR, message: 'An unknown error occurred' }
         }
     }
-
-    async deleteUserFromRoom(room: Room): Promise<ResponseStatus> {
+    async deleteRoom(roomWithOtherPerson: RoomWithOtherPerson): Promise<ResponseStatus> {
 
         try {
             await this.db.delete(schema.rooms).where(
-                eq(schema.rooms.roomId, room.roomId) && eq(schema.rooms.userName, room.userName)
-
+                eq(schema.rooms.roomId, roomWithOtherPerson.room.roomId)
             )
             return { status: Status.SUCCESS, message: "Room deleted" }
         }
@@ -95,8 +93,10 @@ export default class RoomRepository {
             }
             return { status: Status.ERROR, message: 'An unknown error occurred' }
         }
-    }
 
+
+
+    }
     async findPeopleInRoom(roomId: string): Promise<Room[] | null> {
         try {
             const res = await this.db.select().from(schema.rooms).where(

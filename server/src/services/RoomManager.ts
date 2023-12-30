@@ -72,18 +72,14 @@ export default class RoomManager {
 
         await this.roomRepository.addUserToRoom(room)
 
-    }
-
-    async deleteUserFromRoom(userName: string, roomId: string) {
-        const room: Room = {
-            roomId: roomId,
-            userName: userName,
-            hidden: false
-        }
-
-        await this.roomRepository.deleteUserFromRoom(room)
 
     }
+
+    async deleteRoom(roomWithOtherPerson: RoomWithOtherPerson) {
+        await this.roomRepository.deleteRoom(roomWithOtherPerson)
+    }
+
+
 
     async createRoomWithUser(userName: string, otherPersonUsername: string): Promise<string | undefined> {
 

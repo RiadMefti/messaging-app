@@ -6,6 +6,7 @@ import { useUserStore } from "@/stores/UserStore";
 import { Message, RoomWithOtherPerson } from "@/types/Type";
 import { useRoomStore } from "@/stores/RoomStore";
 import socket from "@/socket";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type MessageData = {
   room: string;
@@ -60,6 +61,9 @@ const ChatPage: FC = () => {
     const data = { room: roomId, message: message } as MessageData;
     socket.emit("sendMessage", data);
     setMessage("");
+  };
+  const deleteRoom = (roomWithOthjerPerson: RoomWithOtherPerson) => {
+    socket.emit("deleteRoom", roomWithOthjerPerson);
   };
   useEffect(() => {
     if (!user) {
@@ -126,7 +130,7 @@ const ChatPage: FC = () => {
           {rooms?.map((room: RoomWithOtherPerson) => (
             <div
               key={room.room.roomId}
-              className={`p-3 cursor-pointer rounded-md ${
+              className={`p-3 cursor-pointer rounded-md  flex justify-between w-full${
                 selectedRoom?.room.roomId === room.room.roomId
                   ? "bg-accent text-accent-foreground"
                   : "hover:bg-secondary hover:text-secondary-foreground"
@@ -134,6 +138,13 @@ const ChatPage: FC = () => {
               onClick={() => setSelectedRoom(room)}
             >
               {room.otherPersonneInTheRoom}
+              <DeleteIcon
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering the room selection
+                  deleteRoom(room);
+                }}
+                style={{ cursor: "pointer", float: "right" }}
+              />
             </div>
           ))}
         </div>
