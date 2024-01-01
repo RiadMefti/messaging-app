@@ -1,0 +1,10 @@
+FROM oven/bun:1 as base
+
+
+
+WORKDIR /app
+
+# Copy the app files
+COPY . .
+RUN bun install
+CMD ["bun", "run", "dev"]
