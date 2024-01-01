@@ -1,5 +1,3 @@
-import Room from "../models/Room";
-
 export type UserId = string;
 export type ResponseStatus = {
     status: Status;
@@ -15,13 +13,24 @@ export type NameReturn = {
     id: string;
     name: string;
 }
-export type Messsage = {
+export type Message = {
     message: string;
-    room : string;
-    sender : string;
-    time : string;
+    room: string;
+    sender: string;
+    time: string;
 }
 
+export type User = {
+    id: UserId;
+    name: string;
+
+
+}
+export  interface Room {
+    roomId: string;
+    userName: string;
+    hidden: boolean;
+}
 export type RoomWithOtherPerson={
     room: Room;
     otherPersonneInTheRoom: string;
