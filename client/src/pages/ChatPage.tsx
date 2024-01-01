@@ -55,6 +55,12 @@ const ChatPage: FC = () => {
   };
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      socket.emit("getRooms");
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+  useEffect(() => {
     scrollToBottom();
   }, [messages]); // Dependency array includes messages
   const sendMessage = (roomId: string, message: Message) => {
@@ -79,7 +85,6 @@ const ChatPage: FC = () => {
         initRoomMessages(rooms);
       });
       socket.on("receiveMessage", (data: MessageData) => {
-        console.log(data);
         addMessageToRoom(data.room, data.message);
       });
     }

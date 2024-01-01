@@ -58,7 +58,7 @@ const SignUp: FC = () => {
         <>
           <div className="mt-4 text-center text-lg">
             Your ID is{" "}
-            <span className="font-bold text-yellow-300">{user.id}.</span> Keep
+            <span className="font-bold text-yellow-300">{user.id}</span> Keep
             it safe as it cannot be retrieved if lost. Your username is also{" "}
             <span className="font-bold text-yellow-300">{user.name}</span> give
             this to people you want to chat with so they can add you
